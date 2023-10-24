@@ -12,7 +12,7 @@ model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 # Входная функция телеграма, просто реагирует на начальную команду /start
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}. Бот распознаёт людей на фото и считает их. Пришлите фотографию с людьми.')
+    bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}. Пришлите фотографию с людьми.')
 
 
 # Функция получения фотографии от бота
@@ -38,7 +38,7 @@ def send_photo(message, file_info, src):
     number_of_persons = len(results[results['name'] == 'person']) # Посчет людей на фотографии
     send_src = f'photos/file_{number}/file_{number}.jpg'
     bot.reply_to(message, f'Фотография обработана!')
-    bot.send_photo(message.chat.id, open(send_src, 'rb'), caption=f'Количество людей на фотографии: {number_of_persons}')
+    bot.send_photo(message.chat.id, open(send_src, 'rb'), caption=f'Количество людей на фото: {number_of_persons}')
     remove_photo(number, src)
 
 
