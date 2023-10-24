@@ -3,6 +3,10 @@ import telebot
 import os
 import shutil
 
+# pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+# pip install -r https://raw.githubusercontent.com/ultralytics/yolov5/master/requirements.txt
+# pip install pyTelegramBotAPI
+
 # API токен от @BotFather
 bot = telebot.TeleBot('6649613976:AAHTu6w5vq4_kKY76sh2oPwdOg7YNsVlS_o')
 
