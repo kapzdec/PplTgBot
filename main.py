@@ -3,21 +3,15 @@ import telebot
 import os
 import shutil
 
-# pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
-# pip install -r https://raw.githubusercontent.com/ultralytics/yolov5/master/requirements.txt
-# pip install pyTelegramBotAPI
-
 # API токен от @BotFather
 bot = telebot.TeleBot('6649613976:AAHTu6w5vq4_kKY76sh2oPwdOg7YNsVlS_o')
 
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
-
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='C:/Users/robb/Desktop/test_ai_bot/yolov5/pantheras_two.pt', force_reload=True)
 
 # Входная функция телеграма, просто реагирует на начальную команду /start
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}. Пришлите фотографию с людьми.')
-
+    bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}.')
 
 # Функция получения фотографии от бота
 @bot.message_handler(content_types=['photo'])
@@ -32,19 +26,15 @@ def get_photo(message):
     except Exception as e:
         bot.reply_to(message, e)
 
-
 # Функция отправки обработанний фотографии со всеми рамками
 def send_photo(message, file_info, src):
     number = file_info.file_path[file_info.file_path.find('_') + 1:]
     number = '.'.join(number.split('.')[:-1])
     model_file = ai_model_for_photo_processing(src, number)
     results = model_file.pandas().xyxy[0]
-    number_of_persons = len(results[results['name'] == 'person']) # Посчет людей на фотографии
     send_src = f'photos/file_{number}/file_{number}.jpg'
     bot.reply_to(message, f'Фотография обработана!')
-    bot.send_photo(message.chat.id, open(send_src, 'rb'), caption=f'Количество людей на фото: {number_of_persons}')
     remove_photo(number, src)
-
 
 # Функция обработки фотографий с помощью YOLOv5s
 def ai_model_for_photo_processing(src, number):
@@ -52,11 +42,9 @@ def ai_model_for_photo_processing(src, number):
     model_file.save(labels=True, save_dir=f'photos/file_{number}')
     return model_file
 
-
 # Функция удаления фотографий
 def remove_photo(number, src):
     os.remove(src)
     shutil.rmtree(f'photos/file_{number}')
-
 
 bot.polling(none_stop=True)
